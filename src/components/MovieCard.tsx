@@ -9,6 +9,8 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import AddIcon from "@mui/icons-material/Add";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CloseIcon from "@mui/icons-material/Close";
+import Image from "next/image";
+import { formatDate } from "../lib/utilitity";
 
 type MovieCardProps = {
   movie: Movie;
@@ -55,7 +57,15 @@ const MovieCard = ({ movie, allGenres }: MovieCardProps) => {
             <h1 className="text-3xl font-normal text-[#e7e7e7] mb-2 line-clamp-1">
               {movie.title}
             </h1>
-            {/* ... other existing content ... */}
+            <ul className="flex flex-row gap-1 text-sm">
+              <li className="mb-2 text-gray-400">
+                {formatDate(movie.release_date)}
+              </li>
+              <li className="mb-2 text-gray-400">{movie.vote_average}</li>
+              <li className="mb-4 text-gray-400 line-clamp-1">{genreNames.join(", ")}</li>
+              <li></li>
+            </ul>
+            <p className="text-sm text-gray-300 mb-4 line-clamp-4">{movie.overview}</p>
             <div className="flex justify-between items-center">
               <button
                 onClick={handleExpand}
@@ -87,10 +97,12 @@ const MovieCard = ({ movie, allGenres }: MovieCardProps) => {
             </button>
             <div className="flex flex-col md:flex-row">
               <div className="md:w-1/3">
-                <img
+                <Image
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title}
                   className="w-full rounded-lg shadow-lg"
+                  width={150}
+                  height={300}
                 />
               </div>
               <div className="md:w-2/3 md:pl-8 mt-4 md:mt-0">

@@ -19,7 +19,7 @@ export default function MovieDetails({ params }: { params: { id: string } }) {
   }, [params.id]);
 
   if (!movie) return <div>Loading...</div>;
-
+  console.log(movie);
   return (
     <Layout>
       <motion.div

@@ -10,7 +10,7 @@ import AddIcon from "@mui/icons-material/Add";
 import BookmarkIcon from "@mui/icons-material/Bookmark";
 import CloseIcon from "@mui/icons-material/Close";
 import Image from "next/image";
-import { formatDate } from "../lib/utilitity";
+import { formatDate, formatCurrency } from "../lib/utilitity";
 
 type MovieCardProps = {
   movie: Movie;
@@ -35,6 +35,8 @@ const MovieCard = ({ movie, allGenres }: MovieCardProps) => {
   const handleClose = () => {
     setIsExpanded(false);
   };
+
+  console.log(movie);
 
   return (
     <AnimatePresence>
@@ -62,10 +64,14 @@ const MovieCard = ({ movie, allGenres }: MovieCardProps) => {
                 {formatDate(movie.release_date)}
               </li>
               <li className="mb-2 text-gray-400">{movie.vote_average}</li>
-              <li className="mb-4 text-gray-400 line-clamp-1">{genreNames.join(", ")}</li>
+              <li className="mb-4 text-gray-400 line-clamp-1">
+                {genreNames.join(", ")}
+              </li>
               <li></li>
             </ul>
-            <p className="text-sm text-gray-300 mb-4 line-clamp-4">{movie.overview}</p>
+            <p className="text-sm text-gray-300 mb-4 line-clamp-4">
+              {movie.overview}
+            </p>
             <div className="flex justify-between items-center">
               <button
                 onClick={handleExpand}
@@ -88,7 +94,7 @@ const MovieCard = ({ movie, allGenres }: MovieCardProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <div className="max-w-4xl mx-auto p-8">
+          <div className="max-w-6xl mx-auto p-8">
             <button
               onClick={handleClose}
               className="absolute top-4 right-4 text-white"
@@ -101,25 +107,150 @@ const MovieCard = ({ movie, allGenres }: MovieCardProps) => {
                   src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
                   alt={movie.title}
                   className="w-full rounded-lg shadow-lg"
-                  width={150}
-                  height={300}
+                  width={300}
+                  height={450}
                 />
               </div>
               <div className="md:w-2/3 md:pl-8 mt-4 md:mt-0">
-                <h1 className="text-4xl font-bold text-white mb-4">
+                <h1 className="text-4xl font-bold text-white mb-2">
                   {movie.title}
                 </h1>
-                <p className="text-xl text-gray-300 mb-4">{movie.overview}</p>
-                <p className="mb-2 text-gray-400">
-                  <strong>Release Date:</strong> {movie.release_date}
-                </p>
-                <p className="mb-2 text-gray-400">
-                  <strong>Rating:</strong> {movie.vote_average}/10
-                </p>
-                <p className="mb-4 text-gray-400">
-                  <strong>Genres:</strong> {genreNames.join(", ")}
-                </p>
-                {/* Add more details here */}
+                {movie.tagline && (
+                  <p className="text-xl text-gray-400 italic mb-4">
+                    {movie.tagline}
+                  </p>
+                )}
+                <p className="text-lg text-gray-300 mb-4">{movie.overview}</p>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {movie.release_date && (
+                    <div>
+                      <h3 className="text-white font-semibold">Release Date</h3>
+                      <p className="text-gray-400">
+                        {formatDate(movie.release_date)}
+                      </p>
+                    </div>
+                  )}
+                  {movie.runtime && movie.runtime > 0 && (
+                    <div>
+                      <h3 className="text-white font-semibold">Runtime</h3>
+                      <p className="text-gray-400">{movie.runtime} minutes</p>
+                    </div>
+                  )}
+                  {movie.vote_average && (
+                    <div>
+                      <h3 className="text-white font-semibold">Rating</h3>
+                      <p className="text-gray-400">
+                        {movie.vote_average.toFixed(1)}/10 ({movie.vote_count}{" "}
+                        votes)
+                      </p>
+                    </div>
+                  )}
+                  {genreNames.length > 0 && (
+                    <div>
+                      <h3 className="text-white font-semibold">Genres</h3>
+                      <p className="text-gray-400">{genreNames.join(", ")}</p>
+                    </div>
+                  )}
+                  {movie.budget > 0 && (
+                    <div>
+                      <h3 className="text-white font-semibold">Budget</h3>
+                      <p className="text-gray-400">
+                        {formatCurrency(movie.budget)}
+                      </p>
+                    </div>
+                  )}
+                  {movie.revenue > 0 && (
+                    <div>
+                      <h3 className="text-white font-semibold">Revenue</h3>
+                      <p className="text-gray-400">
+                        {formatCurrency(movie.revenue)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {movie.production_companies &&
+                  movie.production_companies.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="text-white font-semibold mb-2">
+                        Production Companies
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {movie.production_companies.map((company) => (
+                          <span
+                            key={company.id}
+                            className="bg-gray-700 text-white px-2 py-1 rounded-full text-sm"
+                          >
+                            {company.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {movie.production_countries &&
+                  movie.production_countries.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="text-white font-semibold mb-2">
+                        Production Countries
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {movie.production_countries.map((country) => (
+                          <span
+                            key={country.iso_3166_1}
+                            className="bg-gray-700 text-white px-2 py-1 rounded-full text-sm"
+                          >
+                            {country.name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {movie.spoken_languages &&
+                  movie.spoken_languages.length > 0 && (
+                    <div className="mt-4">
+                      <h3 className="text-white font-semibold mb-2">
+                        Spoken Languages
+                      </h3>
+                      <div className="flex flex-wrap gap-2">
+                        {movie.spoken_languages.map((language) => (
+                          <span
+                            key={language.iso_639_1}
+                            className="bg-gray-700 text-white px-2 py-1 rounded-full text-sm"
+                          >
+                            {language.english_name}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                {movie.belongs_to_collection && (
+                  <div className="mt-4">
+                    <h3 className="text-white font-semibold mb-2">
+                      Collection
+                    </h3>
+                    <p className="text-gray-400">
+                      {movie.belongs_to_collection.name}
+                    </p>
+                  </div>
+                )}
+
+                {movie.homepage && (
+                  <div className="mt-4">
+                    <h3 className="text-white font-semibold mb-2">Homepage</h3>
+                    <a
+                      href={movie.homepage}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-400 hover:underline"
+                    >
+                      {movie.homepage}
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
           </div>

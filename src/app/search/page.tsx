@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { searchMovies, fetchMovieGenres } from "@/src/lib/api";
 import Layout from "@/src/components/Layout";
 import SearchBar from "@/src/components/SearchBar";
@@ -9,6 +10,8 @@ import { Movie, Genre } from "@/src/lib/types";
 const SearchPage = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     const fetchGenres = async () => {
@@ -20,12 +23,18 @@ const SearchPage = () => {
       }
     };
     fetchGenres();
-  }, []);
+
+    const query = searchParams.get('q');
+    if (query) {
+      handleSearch(query);
+    }
+  }, [searchParams]);
 
   const handleSearch = async (query: string) => {
     try {
       const data = await searchMovies(query);
       setMovies(data.results);
+      router.push(`search?q=${encodeURIComponent(query)}`, {scroll: false});
     } catch (error) {
       console.error("Error searching movies:", error);
     }
@@ -64,7 +73,7 @@ const SearchPage = () => {
         </div>
         <div className="flex-1 p-8">
           <h1>Search Movies</h1>
-          <SearchBar onSearch={handleSearch} />
+          <SearchBar onSearch={handleSearch} initialQuery={searchParams.get('q') || ''} />
           <div className="movie-grid flex justify-between flex-col flex-wrap">
             {movies.map((movie) => (
               <MovieCard key={movie.id} movie={movie} />

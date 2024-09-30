@@ -23,12 +23,13 @@ export interface Movie {
     overview: string;
     vote_average: number;
     release_date: string;
-    runtime: number;
+    runtime?: number;
     budget: number;
     revenue: number;
     genres: Genre[];
     production_companies: ProductionCompany[];
     spoken_languages: Language[];
+    genre_ids?: number[];
     // Add other properties as needed
 }
 

@@ -9,7 +9,9 @@ import { Movie, Genre } from "@/src/lib/types";
 
 const SearchPage = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const [genres, setGenres] = useState<Genre[]>([]);
+  const [selectedGenre, setSelectedGenre] = useState<string>("");
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -24,25 +26,59 @@ const SearchPage = () => {
     };
     fetchGenres();
 
-    const query = searchParams.get('q');
+    const query = searchParams.get("q");
+    const genre = searchParams.get("genre");
     if (query) {
       handleSearch(query);
     }
+    if (genre) {
+      setSelectedGenre(genre);
+    }
   }, [searchParams]);
 
-  const handleSearch = async (query: string) => {
+  useEffect(() => {
+    filterMovies();
+  }, [movies, selectedGenre]);
+
+  const handleSearch = async (
+    query: string,
+    genreId: string = selectedGenre
+  ) => {
     try {
       const data = await searchMovies(query);
       setMovies(data.results);
-      router.push(`search?q=${encodeURIComponent(query)}`, {scroll: false});
+      const searchUrl = `search?q=${encodeURIComponent(query)}${
+        genreId ? `&genre=${genreId}` : ""
+      }`;
+      router.push(searchUrl, { scroll: false });
     } catch (error) {
       console.error("Error searching movies:", error);
     }
   };
 
+  const handleGenreChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const newGenre = event.target.value;
+    setSelectedGenre(newGenre);
+    const currentQuery = searchParams.get("q");
+    if (currentQuery) {
+      handleSearch(currentQuery, newGenre);
+    }
+  };
+
+  const filterMovies = () => {
+    if (selectedGenre) {
+      const filtered = movies.filter((movie) =>
+        movie.genre_ids?.includes(Number(selectedGenre))
+      );
+      setFilteredMovies(filtered);
+    } else {
+      setFilteredMovies(movies);
+    }
+  };
+
   return (
     <Layout>
-      <div className="flex h-screen bg-gray-100">
+      <div className="flex h-max bg-gray-100">
         {/* sidebar */}
         <div className="w-64 bg-white shadow-md">
           <div className="p-4">
@@ -57,26 +93,36 @@ const SearchPage = () => {
                   Category
                 </label>
                 <select
-                  name=""
-                  id=""
-                  className="mt-1 block w-full rounded-md broder-gray-300 shadow-sm focus:border-indigo-300 focus:ring"
-                ></select>
-                <option value="">All Categories</option>
-                {genres.map((genre) => (
-                  <option className="text-gray-700" key={genre.id} value={genre.id}>
-                    {genre.name}
-                  </option>
-                ))}
+                  name="category"
+                  id="category"
+                  value={selectedGenre}
+                  onChange={handleGenreChange}
+                  className="mt-1 block text-black w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring"
+                >
+                  <option value="">All Categories</option>
+                  {genres.map((genre) => (
+                    <option
+                      className="text-gray-700"
+                      key={genre.id}
+                      value={genre.id}
+                    >
+                      {genre.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>
         </div>
-        <div className="flex-1 p-8">
-          <h1>Search Movies</h1>
-          <SearchBar onSearch={handleSearch} initialQuery={searchParams.get('q') || ''} />
-          <div className="movie-grid flex justify-between flex-col flex-wrap">
-            {movies.map((movie) => (
-              <MovieCard key={movie.id} movie={movie} />
+        <div className="flex flex-col flex-1 p-8 gap-4">
+          <h1 className="text-2xl font-bold text-black ">Search Movies</h1>
+          <SearchBar
+            onSearch={(query) => handleSearch(query, selectedGenre)}
+            initialQuery={searchParams.get("q") || ""}
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredMovies.map((movie) => (
+              <MovieCard key={movie.id} movie={movie} allGenres={genres} />
             ))}
           </div>
         </div>

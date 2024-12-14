@@ -78,8 +78,8 @@ const SearchPage = () => {
 
   return (
     <Layout>
-      <div className="flex h-max bg-gray-100">
-        <div className="w-64 bg-white shadow-md">
+      <div className="flex">
+        <div className="w-64 bg-white shadow-md p-4 min-h-screen">
           <div className="p-4">
             <h2 className="text-lg font-semibold mb-4">Filters</h2>
             <div className="space-y-4">

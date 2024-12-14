@@ -17,7 +17,7 @@ export default function RootLayout({
 
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={inter.className} style={{height: '100vh'}}>
         <AnimatePresence mode="wait" initial={false}>
           {React.cloneElement(children as React.ReactElement, {
             key: pathname,

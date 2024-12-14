@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Link from "next/link";
 import { ReactNode } from "react";
@@ -16,17 +16,32 @@ const variants = {
 
 const Layout = ({ children }: LayoutProps) => {
   return (
-    <div>
-      <nav>
-        <ul>
+    <div className="h-full bg-gray-100">
+      <nav className="bg-white shadow-md py-4 px-8">
+        <ul className="flex justify-center gap-8">
           <li>
-            <Link href="/">Home</Link>
+            <Link
+              href="/"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+            >
+              Home
+            </Link>
           </li>
           <li>
-            <Link href="/search">Search</Link>
+            <Link
+              href="/search"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+            >
+              Search
+            </Link>
           </li>
           <li>
-            <Link href="/watchlist">Watch List</Link>
+            <Link
+              href="/watchlist"
+              className="text-gray-700 hover:text-blue-600 font-medium transition-colors duration-200"
+            >
+              Watch List
+            </Link>
           </li>
         </ul>
       </nav>
@@ -36,6 +51,7 @@ const Layout = ({ children }: LayoutProps) => {
         animate="enter"
         exit="exit"
         transition={{ type: "linear", duration: 0.3 }}
+        className="bg-gray-100"
       >
         {children}
       </motion.main>
